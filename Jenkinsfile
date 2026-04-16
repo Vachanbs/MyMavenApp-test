@@ -1,46 +1,44 @@
 pipeline {
-    agent any 
+    agent any   // Run on any available agent
+
     tools {
-        maven 'Maven' 
+        maven 'Maven'   // Must match name configured in Jenkins (Global Tool Config)
     }
+
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Vachanbs/DevopsMaven.git'
+                // Recommended if repo is configured in Jenkins
+                checkout scm
+
+                // OR use this if not configured:
+                 git url: 'https://github.com/Vachanbs/MyMavenApp.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package' 
+                sh 'mvn clean package'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test' 
+                sh 'mvn test'
             }
         }
-
-        
-        
-       
-        stage('Run Application') {
-            steps {
-                
-                sh 'java -jar target/MyMavenApp-1.0-SNAPSHOT.jar'
-            }
-        }
-
-        
     }
 
     post {
+        always {
+            echo 'Pipeline execution completed'
+        }
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build SUCCESS '
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build FAILED '
         }
     }
 }
